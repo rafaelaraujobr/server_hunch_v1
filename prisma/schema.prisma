@@ -1,0 +1,81 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Role {
+  id          String   @id @default(uuid())
+  name        String
+  description String
+  created_at  DateTime @default(now())
+  updated_at  DateTime @default(now())
+  users       User[]
+
+  @@map(name: "roles")
+}
+
+model Permission {
+  id          String   @id @default(uuid())
+  name        String
+  description String
+  created_at  DateTime @default(now())
+  updated_at  DateTime @default(now())
+
+  @@map(name: "permissions")
+}
+
+model RoleOnPermissions {
+  role_id       String
+  permission_id String
+  created_at    DateTime @default(now())
+  updated_at    DateTime @default(now())
+
+  @@id([role_id, permission_id])
+  @@map(name: "role_on_permissions")
+}
+
+model User {
+  id         String       @id @default(uuid())
+  name       String?
+  email      String       @unique
+  password   String
+  created_at DateTime     @default(now())
+  updated_at DateTime     @updatedAt
+  preference Preference[]
+  session    Session[]
+  roles_id   String?
+  role       Role?        @relation(fields: [roles_id], references: [id])
+
+  @@map(name: "users")
+}
+
+model Preference {
+  id         String   @id @default(uuid())
+  user_id    String
+  user       User     @relation(fields: [user_id], references: [id])
+  language   String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@map(name: "preferences")
+}
+
+model Session {
+  id         String   @id @default(uuid())
+  user_id    String
+  user       User     @relation(fields: [user_id], references: [id])
+  user_agent String
+  ip         String
+  expires_at DateTime
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@map(name: "sessions")
+}
