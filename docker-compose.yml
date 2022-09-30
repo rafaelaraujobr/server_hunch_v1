@@ -4,6 +4,7 @@ services:
 
   app:
     build: .
+    container_name: hunch_app
     ports:
       - 3000:3000
     entrypoint: .docker/entrypoint.sh
@@ -14,6 +15,7 @@ services:
   db:
     build: .docker/postgres
     restart: always
+    container_name: hunch_db
     tty: true
     ports:
       - "5432:5432"
@@ -26,6 +28,7 @@ services:
 
   adminer:
     image: adminer
+    container_name: hunch_adminer
     restart: always
     ports:
       - 8000:8080
