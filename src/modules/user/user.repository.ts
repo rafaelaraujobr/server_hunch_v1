@@ -55,4 +55,7 @@ export class UserRepository {
     ]);
     return { records, total, pages: Math.ceil(total / take) };
   }
+  async findByEmail(email: string) {
+    return await this.prisma.user.findUnique({ where: { email } });
+  }
 }
