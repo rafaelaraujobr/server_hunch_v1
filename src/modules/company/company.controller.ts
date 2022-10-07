@@ -1,6 +1,8 @@
 import {
   Controller,
   Get,
+  Param,
+  ParseUUIDPipe,
   Query,
   // Post, Body, Patch, Param, Delete
 } from '@nestjs/common';
@@ -19,14 +21,14 @@ export class CompanyController {
   // }
 
   @Get()
-  findAll(@Query() queryCompanyDto: QueryCompanyDto) {
+  index(@Query() queryCompanyDto: QueryCompanyDto) {
     return this.companyService.findAll(queryCompanyDto);
   }
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.companyService.findOne(+id);
-  // }
+  @Get(':id')
+  show(@Param('id', new ParseUUIDPipe()) id: string) {
+    return this.companyService.findOne(id);
+  }
 
   // @Patch(':id')
   // update(@Param('id') id: string, @Body() updateCompanyDto: UpdateCompanyDto) {

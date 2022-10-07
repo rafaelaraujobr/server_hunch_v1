@@ -48,9 +48,9 @@ export class CompanyRepository {
     return { records, total, pages: Math.ceil(total / take) };
   }
 
-  // findOne(id: number) {
-  //   return `This action returns a #${id} company`;
-  // }
+  findOne(id: string) {
+    return this.prisma.company.findUnique({ where: { id } });
+  }
 
   // update(id: number, updateCompanyDto: UpdateCompanyDto) {
   //   return `This action updates a #${id} company`;
