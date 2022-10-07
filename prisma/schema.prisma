@@ -41,17 +41,29 @@ model RoleOnPermissions {
   @@map(name: "role_on_permissions")
 }
 
+model Company {
+  id           String   @id @default(uuid())
+  company_name String
+  users        User[]
+  created_at   DateTime @default(now())
+  updated_at   DateTime @default(now())
+
+  @@map(name: "companies")
+}
+
 model User {
   id         String       @id @default(uuid())
   name       String?
   email      String       @unique
   password   String
-  created_at DateTime     @default(now())
-  updated_at DateTime     @updatedAt
   preference Preference[]
   session    Session[]
   roles_id   String?
   role       Role?        @relation(fields: [roles_id], references: [id])
+  created_at DateTime     @default(now())
+  updated_at DateTime     @updatedAt
+  company_id String?
+  company    Company?     @relation(fields: [company_id], references: [id])
 
   @@map(name: "users")
 }
@@ -60,7 +72,7 @@ model Preference {
   id         String   @id @default(uuid())
   user_id    String
   user       User     @relation(fields: [user_id], references: [id])
-  language   String
+  language   String   @default("pt-BR")
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
