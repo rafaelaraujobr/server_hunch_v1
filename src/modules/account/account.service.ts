@@ -5,6 +5,7 @@ import { AccountRepository } from './account.repository';
 import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { QuerySessionDto } from './dto/query-session.dto';
+import { UpdatePreferenceDto } from './dto/update-preference.dto';
 // import { UpdateAccountDto } from './dto/update-account.dto';
 
 @Injectable()
@@ -58,6 +59,13 @@ export class AccountService {
       access_token: token,
       refresh_token: refreshToken,
     };
+  }
+
+  updatePreference(user_id: string, updatePreferenceDto: UpdatePreferenceDto) {
+    return this.accountRepository.updatePreference(
+      user_id,
+      updatePreferenceDto,
+    );
   }
 
   // update(id: number, updateAccountDto: UpdateAccountDto) {

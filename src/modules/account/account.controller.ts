@@ -7,6 +7,7 @@ import {
   Ip,
   Get,
   Query,
+  Patch,
 } from '@nestjs/common';
 import { AccountService } from './account.service';
 import { AuthGuard } from '@nestjs/passport';
@@ -15,6 +16,7 @@ import { QuerySessionDto } from './dto/query-session.dto';
 import { RoleGuard } from './role.guard';
 import { Roles } from './roles.decorator';
 import { Role } from './entities/role.enum';
+import { UpdatePreferenceDto } from './dto/update-preference.dto';
 // import { UpdateAccountDto } from './dto/update-account.dto';
 
 @Controller('api/v1/accounts')
@@ -37,6 +39,18 @@ export class AccountController {
   @Get('me')
   myData(@Request() req: any) {
     return this.accountService.myData(req.user);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Patch('preferences')
+  updatePreference(
+    @Request() req: any,
+    @Body() updatePreferenceDto: UpdatePreferenceDto,
+  ) {
+    return this.accountService.updatePreference(
+      req.user.id,
+      updatePreferenceDto,
+    );
   }
 
   @UseGuards(AuthGuard('local'))

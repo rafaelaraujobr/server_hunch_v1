@@ -3,6 +3,7 @@ import { PrismaService } from 'src/prisma.service';
 import { CreateAccountDto } from './dto/create-account.dto';
 import { QuerySessionDto } from './dto/query-session.dto';
 import { SessionAccountDto } from './dto/session-account.dto';
+import { UpdatePreferenceDto } from './dto/update-preference.dto';
 import { Role } from './entities/role.enum';
 
 @Injectable()
@@ -38,7 +39,7 @@ export class AccountRepository {
   deleteSession(user_id: string) {
     return this.prisma.session.updateMany({
       where: {
-        user_id: user_id,
+        user_id,
         deleted_at: null,
       },
       data: {
@@ -52,17 +53,6 @@ export class AccountRepository {
     const orderBy = {
       [querySessionDto.orderBy || 'created_at']: querySessionDto.sort || 'desc',
     };
-    // const where = {
-    //   user_id: querySessionDto.user_id,
-    //   email: querySessionDto.email,
-    //   company: {
-    //     company_name: queryUserDto.company_name,
-    //   },
-    //   OR: [
-    //     { name: { contains: queryUserDto.search || '' } },
-    //     { email: { contains: queryUserDto.search || '' } },
-    //   ],
-    // };
     const skip = (page - 1) * perPage;
     const take = perPage;
     const select = {
@@ -98,5 +88,18 @@ export class AccountRepository {
       this.prisma.session.count(),
     ]);
     return { records, total, pages: Math.ceil(total / take) };
+  }
+
+  updatePreference(user_id: string, updatePreferenceDto: UpdatePreferenceDto) {
+    return this.prisma.preference.update({
+      where: { user_id },
+      data: {
+        ...updatePreferenceDto,
+      },
+      select: {
+        dark_mode: true,
+        language: true,
+      },
+    });
   }
 }
