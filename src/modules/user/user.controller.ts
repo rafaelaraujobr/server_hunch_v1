@@ -6,6 +6,7 @@ import {
   // Body,
   // Patch,
   Param,
+  ParseUUIDPipe,
   // Delete,
 } from '@nestjs/common';
 import { UserService } from './user.service';
@@ -28,8 +29,12 @@ export class UserController {
   }
 
   @Get(':id')
-  show(@Param('id') id: string) {
+  show(@Param('id', new ParseUUIDPipe()) id: string) {
     return this.userService.findOne(id);
+  }
+  @Get(':company_id/companies')
+  findByCompany(@Param('company_id', new ParseUUIDPipe()) company_id: string) {
+    return this.userService.findByCompany(company_id);
   }
 
   // @Patch(':id')

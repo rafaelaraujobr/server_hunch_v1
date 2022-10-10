@@ -1,14 +1,17 @@
 import {
   Controller,
-  // Get,
   Post,
   Body,
-  // Patch,
-  // Param,
-  // Delete,
+  Request,
+  UseGuards,
+  Ip,
+  Get,
+  Query,
 } from '@nestjs/common';
 import { AccountService } from './account.service';
+import { AuthGuard } from '@nestjs/passport';
 import { CreateAccountDto } from './dto/create-account.dto';
+import { QuerySessionDto } from './dto/query-session.dto';
 // import { UpdateAccountDto } from './dto/update-account.dto';
 
 @Controller('api/v1/accounts')
@@ -18,6 +21,18 @@ export class AccountController {
   @Post()
   create(@Body() createAccountDto: CreateAccountDto) {
     return this.accountService.create(createAccountDto);
+  }
+
+  @Get('online_users')
+  findAllSessions(@Query() querySessionDto: QuerySessionDto) {
+    return this.accountService.findAllSessions(querySessionDto);
+  }
+
+  @UseGuards(AuthGuard('local'))
+  @Post('authentication')
+  async authentication(@Request() req: any, @Ip() ip: string) {
+    const user_agent = req.headers['user-agent'];
+    return await this.accountService.authentication(req.user, user_agent, ip);
   }
 
   // @Get()

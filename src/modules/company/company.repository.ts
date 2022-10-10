@@ -31,7 +31,11 @@ export class CompanyRepository {
       OR: [
         { company_name: { contains: queryCompanyDto.search || '' } },
         {
-          users: { some: { name: { contains: queryCompanyDto.search || '' } } },
+          users: {
+            some: {
+              name: { contains: queryCompanyDto.search || '' },
+            },
+          },
         },
       ],
     };

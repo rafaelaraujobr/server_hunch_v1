@@ -42,7 +42,6 @@ export class UserRepository {
         { email: { contains: queryUserDto.search || '' } },
       ],
     };
-
     const [records, total] = await this.prisma.$transaction([
       this.prisma.user.findMany({
         skip,
@@ -57,5 +56,9 @@ export class UserRepository {
   }
   async findByEmail(email: string) {
     return await this.prisma.user.findUnique({ where: { email } });
+  }
+
+  findByCompany(company_id: string) {
+    return this.prisma.user.findMany({ where: { company_id } });
   }
 }

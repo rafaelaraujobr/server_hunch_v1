@@ -22,6 +22,9 @@ export class UserService {
   findByEmail(email: string) {
     return this.userRepository.findByEmail(email);
   }
+  findByCompany(company_id: string) {
+    return this.userRepository.findByCompany(company_id);
+  }
 
   // update(id: number, updateUserDto: UpdateUserDto) {
   //   return `This action updates a #${id} user`;
