@@ -40,6 +40,10 @@ export class AccountService {
     return this.accountRepository.findAllSessions(querySessionDto);
   }
 
+  async myData(user: { id: string; role: string }) {
+    return this.userService.findOne(user.id);
+  }
+
   async authentication(user: any, userAgent?: string, ipAddress?: string) {
     const payload = { sub: user.id, role: user.role };
     const token = this.jwtService.sign(payload);

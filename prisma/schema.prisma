@@ -41,6 +41,7 @@ model Preference {
   user_id    String
   user       User     @relation(fields: [user_id], references: [id])
   language   String   @default("pt-BR")
+  dark_mode  Boolean  @default(false)
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 

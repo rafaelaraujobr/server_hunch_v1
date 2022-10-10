@@ -33,6 +33,12 @@ export class AccountController {
     return this.accountService.findAllSessions(querySessionDto);
   }
 
+  @UseGuards(AuthGuard('jwt'))
+  @Get('me')
+  myData(@Request() req: any) {
+    return this.accountService.myData(req.user);
+  }
+
   @UseGuards(AuthGuard('local'))
   @Post('authentication')
   async authentication(@Request() req: any, @Ip() ip: string) {
