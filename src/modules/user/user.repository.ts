@@ -58,6 +58,10 @@ export class UserRepository {
     return await this.prisma.user.findUnique({ where: { email } });
   }
 
+  async findOne(id: string) {
+    return await this.prisma.user.findUnique({ where: { id } });
+  }
+
   findByCompany(company_id: string) {
     return this.prisma.user.findMany({ where: { company_id } });
   }

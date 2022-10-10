@@ -12,6 +12,9 @@ import { AccountService } from './account.service';
 import { AuthGuard } from '@nestjs/passport';
 import { CreateAccountDto } from './dto/create-account.dto';
 import { QuerySessionDto } from './dto/query-session.dto';
+import { RoleGuard } from './role.guard';
+import { Roles } from './roles.decorator';
+import { Role } from './entities/role.enum';
 // import { UpdateAccountDto } from './dto/update-account.dto';
 
 @Controller('api/v1/accounts')
@@ -23,7 +26,9 @@ export class AccountController {
     return this.accountService.create(createAccountDto);
   }
 
-  @Get('online_users')
+  @UseGuards(AuthGuard('jwt'), RoleGuard)
+  @Roles(Role.ADMIN)
+  @Get('sessions')
   findAllSessions(@Query() querySessionDto: QuerySessionDto) {
     return this.accountService.findAllSessions(querySessionDto);
   }

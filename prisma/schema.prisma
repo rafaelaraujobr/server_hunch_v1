@@ -10,37 +10,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Role {
-  id          String   @id @default(uuid())
-  name        String
-  description String
-  created_at  DateTime @default(now())
-  updated_at  DateTime @default(now())
-  users       User[]
-
-  @@map(name: "roles")
-}
-
-model Permission {
-  id          String   @id @default(uuid())
-  name        String
-  description String
-  created_at  DateTime @default(now())
-  updated_at  DateTime @default(now())
-
-  @@map(name: "permissions")
-}
-
-model RoleOnPermissions {
-  role_id       String
-  permission_id String
-  created_at    DateTime @default(now())
-  updated_at    DateTime @default(now())
-
-  @@id([role_id, permission_id])
-  @@map(name: "role_on_permissions")
-}
-
 model Company {
   id           String   @id @default(uuid())
   company_name String
@@ -58,8 +27,7 @@ model User {
   password   String
   preference Preference[]
   session    Session[]
-  roles_id   String?
-  role       Role?        @relation(fields: [roles_id], references: [id])
+  role       Role         @default(REGISTERED)
   created_at DateTime     @default(now())
   updated_at DateTime     @updatedAt
   company_id String?
@@ -89,4 +57,10 @@ model Session {
   deleted_at DateTime?
 
   @@map(name: "sessions")
+}
+
+enum Role {
+  REGISTERED
+  MANAGER
+  ADMIN
 }

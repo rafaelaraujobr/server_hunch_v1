@@ -22,6 +22,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     // } catch (error) {
     //   console.log(error);
     // }
-    return { id: payload.sub };
+    return { id: payload.sub, role: payload.role };
   }
 }

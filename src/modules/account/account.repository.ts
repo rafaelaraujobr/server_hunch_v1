@@ -3,6 +3,7 @@ import { PrismaService } from 'src/prisma.service';
 import { CreateAccountDto } from './dto/create-account.dto';
 import { QuerySessionDto } from './dto/query-session.dto';
 import { SessionAccountDto } from './dto/session-account.dto';
+import { Role } from './entities/role.enum';
 
 @Injectable()
 export class AccountRepository {
@@ -13,6 +14,7 @@ export class AccountRepository {
         name: createAccountDto.name,
         email: createAccountDto.email,
         password: createAccountDto.password,
+        role: Role.MANAGER,
         preference: {
           create: {},
         },
@@ -70,6 +72,7 @@ export class AccountRepository {
           id: true,
           name: true,
           email: true,
+          role: true,
           company: {
             select: {
               id: true,
@@ -81,7 +84,6 @@ export class AccountRepository {
       user_agent: true,
       ip_address: true,
       created_at: true,
-      deleted_at: true,
     };
     const [records, total] = await this.prisma.$transaction([
       this.prisma.session.findMany({
