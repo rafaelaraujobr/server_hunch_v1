@@ -13,30 +13,27 @@ export class UserRepository {
     };
     const skip = (page - 1) * perPage;
     const take = perPage;
-    const select = {
-      id: true,
-      email: true,
-      name: true,
-      preference: {
-        select: {
-          language: true,
-        },
-      },
-      company: {
-        select: {
-          id: true,
-          company_name: true,
-        },
-      },
-      created_at: true,
-      updated_at: true,
-    };
+    //   id: true,
+    //   email: true,
+    //   name: true,
+    //   preference: {
+    //     select: {
+    //       language: true,
+    //       dark_mode: true,
+    //     },
+    //   },
+    //   companies: {
+    //     select: {
+    //       company_id: true,
+    //       role: true,
+    //     },
+    //   },
+    //   created_at: true,
+    //   updated_at: true,
+    // };
     const where = {
       name: queryUserDto.name,
       email: queryUserDto.email,
-      company: {
-        company_name: queryUserDto.company_name,
-      },
       OR: [
         { name: { contains: queryUserDto.search || '' } },
         { email: { contains: queryUserDto.search || '' } },
@@ -48,41 +45,121 @@ export class UserRepository {
         take,
         orderBy,
         where,
-        select,
+        include: {
+          preference: {
+            select: {
+              language: true,
+              dark_mode: true,
+            },
+          },
+          companies: {
+            include: {
+              company: {
+                select: {
+                  company_name: true,
+                },
+              },
+            },
+          },
+        },
       }),
       this.prisma.user.count({ where }),
     ]);
-    return { records, total, pages: Math.ceil(total / take) };
+
+    return {
+      records: records.map((record) => {
+        delete record.password;
+        return {
+          ...record,
+          companies: record.companies.map((item) => {
+            return {
+              id: item.company_id,
+              company_name: item.company.company_name,
+              role: item.role,
+            };
+          }),
+        };
+      }),
+      total,
+      pages: Math.ceil(total / take),
+    };
   }
   async findByEmail(email: string) {
     return await this.prisma.user.findUnique({ where: { email } });
   }
 
   async findOne(id: string) {
-    return await this.prisma.user.findUnique({
+    const user = await this.prisma.user.findUnique({
       where: { id },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        role: true,
+      include: {
         preference: {
           select: {
             language: true,
             dark_mode: true,
           },
         },
-        company: {
-          select: {
-            id: true,
-            company_name: true,
+        companies: {
+          include: {
+            company: {
+              select: {
+                company_name: true,
+              },
+            },
           },
         },
       },
     });
+    return {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      preference: user.preference,
+      companies: user.companies.map((item) => {
+        return {
+          id: item.company_id,
+          company_name: item.company.company_name,
+          role: item.role,
+        };
+      }),
+      created_at: user.created_at,
+      updated_at: user.updated_at,
+    };
   }
 
-  findByCompany(company_id: string) {
-    return this.prisma.user.findMany({ where: { company_id } });
+  async findByCompany(company_id: string) {
+    const user = await this.prisma.user.findMany({
+      where: { companies: { some: { company_id } } },
+      include: {
+        preference: {
+          select: {
+            language: true,
+            dark_mode: true,
+          },
+        },
+        companies: {
+          include: {
+            company: {
+              select: {
+                company_name: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    return user.map((user) => {
+      delete user.password;
+      return {
+        ...user,
+        companies: user.companies.map((item) => {
+          return {
+            id: item.company_id,
+            company_name: item.company.company_name,
+            role: item.role,
+          };
+        }),
+      };
+    });
   }
 }

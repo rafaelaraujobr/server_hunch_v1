@@ -9,23 +9,38 @@ import { Role } from './entities/role.enum';
 @Injectable()
 export class AccountRepository {
   constructor(private readonly prisma: PrismaService) {}
-  create(createAccountDto: CreateAccountDto) {
-    return this.prisma.user.create({
-      data: {
-        name: createAccountDto.name,
-        email: createAccountDto.email,
-        password: createAccountDto.password,
-        role: Role.MANAGER,
-        preference: {
-          create: {},
-        },
-        company: {
-          create: {
+  async create(createAccountDto: CreateAccountDto) {
+    try {
+      return await this.prisma.$transaction(async (tx: any) => {
+        const user = await tx.user.create({
+          data: {
+            name: createAccountDto.name,
+            email: createAccountDto.email,
+            password: createAccountDto.password,
+            preference: {
+              create: {},
+            },
+          },
+        });
+        const company = await tx.company.create({
+          data: {
             company_name: createAccountDto.company_name,
           },
-        },
-      },
-    });
+        });
+
+        await tx.companiesOnUsers.create({
+          data: {
+            company_id: company.id,
+            user_id: user.id,
+            role: Role.ADMIN,
+          },
+        });
+        return user;
+      });
+    } catch (error) {
+      console.log(error);
+      return error;
+    }
   }
   createSession(sessionAccountDto: SessionAccountDto) {
     return this.prisma.session.create({

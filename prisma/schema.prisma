@@ -2,7 +2,8 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["interactiveTransactions"]
 }
 
 datasource db {
@@ -11,29 +12,39 @@ datasource db {
 }
 
 model Company {
-  id           String   @id @default(uuid())
+  id           String             @id @default(uuid())
   company_name String
-  users        User[]
-  created_at   DateTime @default(now())
-  updated_at   DateTime @default(now())
+  created_at   DateTime           @default(now())
+  updated_at   DateTime           @default(now())
+  users        CompaniesOnUsers[]
 
   @@map(name: "companies")
 }
 
 model User {
-  id         String       @id @default(uuid())
+  id         String             @id @default(uuid())
   name       String?
-  email      String       @unique
+  email      String             @unique
   password   String
-  preference Preference[]
+  preference Preference?
   session    Session[]
-  role       Role         @default(REGISTERED)
-  created_at DateTime     @default(now())
-  updated_at DateTime     @updatedAt
-  company_id String?
-  company    Company?     @relation(fields: [company_id], references: [id])
+  created_at DateTime           @default(now())
+  updated_at DateTime           @updatedAt
+  companies  CompaniesOnUsers[]
 
   @@map(name: "users")
+}
+
+model CompaniesOnUsers {
+  company_id String
+  company    Company  @relation(fields: [company_id], references: [id])
+  user_id    String
+  user       User     @relation(fields: [user_id], references: [id])
+  role       Role     @default(REGISTERED)
+  created_at DateTime @default(now())
+
+  @@id([company_id, user_id])
+  @@map(name: "companies_on_users")
 }
 
 model Preference {

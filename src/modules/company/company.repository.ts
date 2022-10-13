@@ -17,27 +17,12 @@ export class CompanyRepository {
     const select = {
       id: true,
       company_name: true,
-      users: {
-        select: {
-          id: true,
-          name: true,
-        },
-      },
       created_at: true,
       updated_at: true,
     };
     const where = {
       company_name: queryCompanyDto.company_name,
-      OR: [
-        { company_name: { contains: queryCompanyDto.search || '' } },
-        {
-          users: {
-            some: {
-              name: { contains: queryCompanyDto.search || '' },
-            },
-          },
-        },
-      ],
+      OR: [{ company_name: { contains: queryCompanyDto.search || '' } }],
     };
     const [records, total] = await this.prisma.$transaction([
       this.prisma.company.findMany({
