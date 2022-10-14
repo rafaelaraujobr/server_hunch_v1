@@ -70,39 +70,61 @@ export class AccountRepository {
     };
     const skip = (page - 1) * perPage;
     const take = perPage;
-    const select = {
-      id: true,
-      user: {
-        select: {
-          id: true,
-          name: true,
-          email: true,
-          role: true,
-          company: {
-            select: {
-              id: true,
-              company_name: true,
+    const [records, total] = await this.prisma.$transaction([
+      this.prisma.session.findMany({
+        // where: {
+        //   deleted_at: null,
+        // },
+        skip,
+        take,
+        orderBy,
+        include: {
+          user: {
+            include: {
+              companies: {
+                include: {
+                  company: {
+                    select: {
+                      company_name: true,
+                    },
+                  },
+                },
+              },
             },
           },
         },
-      },
-      user_agent: true,
-      ip_address: true,
-      created_at: true,
-    };
-    const [records, total] = await this.prisma.$transaction([
-      this.prisma.session.findMany({
-        where: {
-          deleted_at: null,
-        },
-        skip,
-        select,
-        take,
-        orderBy,
       }),
-      this.prisma.session.count(),
+      this.prisma.session.count({
+        // where: {
+        //   deleted_at: null,
+        // },
+      }),
     ]);
-    return { records, total, pages: Math.ceil(total / take) };
+    return {
+      records: records.map((record) => {
+        return {
+          id: record.id,
+          user_agent: record.user_agent,
+          ip_address: record.ip_address,
+          created_at: record.created_at,
+          deleted_at: record.deleted_at,
+          user: {
+            id: record.user.id,
+            name: record.user.name,
+            email: record.user.email,
+            companies: record.user.companies.map((item) => {
+              return {
+                id: item.company_id,
+                company_name: item.company.company_name,
+                role: item.role,
+              };
+            }),
+          },
+        };
+      }),
+      total,
+      pages: Math.ceil(total / take),
+    };
   }
 
   updatePreference(user_id: string, updatePreferenceDto: UpdatePreferenceDto) {

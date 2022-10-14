@@ -46,6 +46,7 @@ export class AccountService {
   }
 
   async authentication(user: any, userAgent?: string, ipAddress?: string) {
+    console.log('user', user);
     const payload = { sub: user.id, role: user.role };
     const token = this.jwtService.sign(payload);
     const refreshToken = this.jwtService.sign(payload, { expiresIn: '30d' });

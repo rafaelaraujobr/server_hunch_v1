@@ -85,7 +85,16 @@ export class UserRepository {
     };
   }
   async findByEmail(email: string) {
-    return await this.prisma.user.findUnique({ where: { email } });
+    return await this.prisma.user.findUnique({
+      where: { email },
+      select: {
+        id: true,
+        email: true,
+        password: true,
+        name: true,
+        companies: true,
+      },
+    });
   }
 
   async findOne(id: string) {

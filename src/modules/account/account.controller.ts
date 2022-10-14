@@ -8,6 +8,9 @@ import {
   Get,
   Query,
   Patch,
+  Head,
+  Res,
+  HttpCode,
 } from '@nestjs/common';
 import { AccountService } from './account.service';
 import { AuthGuard } from '@nestjs/passport';
@@ -58,6 +61,21 @@ export class AccountController {
   async authentication(@Request() req: any, @Ip() ip: string) {
     const user_agent = req.headers['user-agent'];
     return await this.accountService.authentication(req.user, user_agent, ip);
+  }
+
+  @UseGuards(AuthGuard('basic'))
+  @Head('login')
+  @HttpCode(204)
+  async login(@Request() req: any, @Res() res: any, @Ip() ip: string) {
+    const user_agent = req.headers['user-agent'];
+    const loginResponse = await this.accountService.authentication(
+      req.user,
+      user_agent,
+      ip,
+    );
+    res.set('x-access-token', loginResponse.access_token);
+    res.set('x-refresh-token', loginResponse.refresh_token);
+    return res.send();
   }
 
   // @Get()
