@@ -47,6 +47,7 @@ export class AccountRepository {
       data: {
         user_id: sessionAccountDto.user_id,
         user_agent: sessionAccountDto.user_agent,
+        origin: sessionAccountDto.origin,
         ip_address: sessionAccountDto.ip_address,
       },
     });
@@ -105,6 +106,7 @@ export class AccountRepository {
         return {
           id: record.id,
           user_agent: record.user_agent,
+          origin: record.origin,
           ip_address: record.ip_address,
           created_at: record.created_at,
           deleted_at: record.deleted_at,

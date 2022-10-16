@@ -27,6 +27,7 @@ export class AccountController {
   constructor(private readonly accountService: AccountService) {}
 
   @Post()
+  @HttpCode(201)
   create(@Body() createAccountDto: CreateAccountDto) {
     return this.accountService.create(createAccountDto);
   }
@@ -60,7 +61,13 @@ export class AccountController {
   @Post('authentication')
   async authentication(@Request() req: any, @Ip() ip: string) {
     const user_agent = req.headers['user-agent'];
-    return await this.accountService.authentication(req.user, user_agent, ip);
+    const origin = req.headers['origin'];
+    return await this.accountService.authentication(
+      req.user,
+      user_agent,
+      origin,
+      ip,
+    );
   }
 
   @UseGuards(AuthGuard('basic'))
@@ -68,9 +75,11 @@ export class AccountController {
   @HttpCode(204)
   async login(@Request() req: any, @Res() res: any, @Ip() ip: string) {
     const user_agent = req.headers['user-agent'];
+    const origin = req.headers['origin'];
     const loginResponse = await this.accountService.authentication(
       req.user,
       user_agent,
+      origin,
       ip,
     );
     res.set('x-access-token', loginResponse.access_token);

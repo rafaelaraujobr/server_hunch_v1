@@ -45,8 +45,12 @@ export class AccountService {
     return this.userService.findOne(user.id);
   }
 
-  async authentication(user: any, userAgent?: string, ipAddress?: string) {
-    console.log('user', user);
+  async authentication(
+    user: any,
+    userAgent?: string,
+    origin?: string,
+    ipAddress?: string,
+  ) {
     const payload = { sub: user.id, role: user.role };
     const token = this.jwtService.sign(payload);
     const refreshToken = this.jwtService.sign(payload, { expiresIn: '30d' });
@@ -54,6 +58,7 @@ export class AccountService {
     await this.accountRepository.createSession({
       user_id: user.id,
       user_agent: userAgent,
+      origin,
       ip_address: ipAddress,
     });
     return {

@@ -3,7 +3,7 @@ import { IsNumber, IsOptional, IsString } from 'class-validator';
 export class QuerySessionDto {
   @IsString()
   @IsOptional()
-  company_name: string;
+  companyName: string;
 
   @IsString()
   @IsOptional()

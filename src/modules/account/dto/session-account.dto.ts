@@ -11,4 +11,8 @@ export class SessionAccountDto {
   @IsString()
   @IsOptional()
   ip_address: string;
+
+  @IsString()
+  @IsOptional()
+  origin: string;
 }
