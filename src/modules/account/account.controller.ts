@@ -61,7 +61,7 @@ export class AccountController {
   @Post('authentication')
   async authentication(@Request() req: any, @Ip() ip: string) {
     const user_agent = req.headers['user-agent'];
-    const origin = req.headers['origin'];
+    const origin = req.headers['origin'] || req.get('origin');
     return await this.accountService.authentication(
       req.user,
       user_agent,
@@ -75,7 +75,7 @@ export class AccountController {
   @HttpCode(204)
   async login(@Request() req: any, @Res() res: any, @Ip() ip: string) {
     const user_agent = req.headers['user-agent'];
-    const origin = req.headers['origin'];
+    const origin = req.headers['origin'] || req.get('origin');
     const loginResponse = await this.accountService.authentication(
       req.user,
       user_agent,

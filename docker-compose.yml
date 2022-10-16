@@ -1,36 +1,46 @@
-version: '3.8'
+# version: '3.8'
 
+# services:
+
+#   app:
+#     build: .
+#     container_name: hunch_app
+#     ports:
+#       - 3000:3000
+#     entrypoint: .docker/entrypoint.sh
+#     volumes:
+#       - .:/home/node/app
+#     depends_on:
+#       - db
+#   db:
+#     build: .docker/postgres
+#     restart: always
+#     container_name: hunch_db
+#     tty: true
+#     ports:
+#       - "5432:5432"
+#     volumes:
+#       - .docker/dbdata:/var/lib/postgresql/data
+#     environment:
+#       POSTGRES_USER: postgres
+#       POSTGRES_PASSWORD: postgres
+# POSTGRES_DB: postgres
+
+version: "3.8"
 services:
-
-  app:
-    build: .
-    container_name: hunch_app
-    ports:
-      - 3000:3000
-    entrypoint: .docker/entrypoint.sh
-    volumes:
-      - .:/home/node/app
-    depends_on:
-      - db
-  db:
-    build: .docker/postgres
-    restart: always
+  postgres:
     container_name: hunch_db
     tty: true
-    ports:
-      - "5432:5432"
+    image: postgres:latest
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
     volumes:
       - .docker/dbdata:/var/lib/postgresql/data
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: postgres
-
-  adminer:
-    image: adminer
-    container_name: hunch_adminer
-    restart: always
     ports:
-      - 8000:8080
-    depends_on:
-      - db
+      - "5432:5432"
+
+# volumes:
+#   postgres:

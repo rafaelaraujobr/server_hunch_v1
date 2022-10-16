@@ -71,6 +71,10 @@ export class AccountRepository {
     };
     const skip = (page - 1) * perPage;
     const take = perPage;
+    // where: {
+    //   user_id: {
+    //     notIn: [''],
+    //   },
     const [records, total] = await this.prisma.$transaction([
       this.prisma.session.findMany({
         // where: {

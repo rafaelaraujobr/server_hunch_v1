@@ -24,4 +24,8 @@ export class QuerySessionDto {
   @IsString()
   @IsOptional()
   sort: string;
+
+  @IsString()
+  @IsOptional()
+  user_id: string;
 }
